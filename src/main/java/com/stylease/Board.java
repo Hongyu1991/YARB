@@ -18,9 +18,15 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class Board {
     private ArrayList<String> messages;
+    private String name;
     
-    public Board() {
+    public Board(String bname) {
         messages = new ArrayList<String>();
+        name = bname;
+    }
+    
+    public String getName() {
+      return name;
     }
    
     
@@ -68,6 +74,10 @@ public class Board {
             messageList.add(new Message(i, this.messages.get(i)));
         }
         return messageList;
+    }
+    
+    public void addMessage(Message m) {
+      this.messages.add(m.text);
     }
 
 }
