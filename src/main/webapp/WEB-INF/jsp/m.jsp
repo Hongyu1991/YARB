@@ -10,7 +10,7 @@
 
     <p>${messageText}</p>
 
-    <a href="/m_list">View all messages</a>
+    <a href="/m_list/${board}">View all messages</a>
             
         </div>
     </jsp:body>
