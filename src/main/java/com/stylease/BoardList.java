@@ -15,28 +15,28 @@ public class BoardList {
   private static int STATIC_BOARD_COUNT = 5;
   private static String[][] STATIC_MESSAGES = {
     {"It sifts from Leaden Sieves -",
-    "It powders all the Wood. ",
-    "It fills with Alabaster Wool ",
+    "It powders all the Wood.",
+    "It fills with Alabaster Wool",
     "The Wrinkles of the Road -",
       },
-    {"It makes an even Face ",
+    {"It makes an even Face",
     "Of Mountain, and of Plain -",
-    "Unbroken Forehead from the East ",
+    "Unbroken Forehead from the East",
     "Unto the East again -",
         },
     {"It reaches to the Fence -",
-    "It wraps it Rail by Rail ",
+    "It wraps it Rail by Rail",
     "Till it is lost in Fleeces -",
-    "It deals Celestial Vail ",
+    "It deals Celestial Vail",
           },
     {"To Stump, and Stack - and Stem -",
-    "A Summer’s empty Room - ",
-    "Acres of Joints, where Harvests were, ",
+    "A Summer's empty Room -",
+    "Acres of Joints, where Harvests were,",
     "Recordless, but for them -",
             },
-    {"It Ruffles Wrists of Posts ",
+    {"It Ruffles Wrists of Posts",
     "As Ankles of a Queen -",
-    "Then stills it’s Artisans - like Ghosts - ",
+    "Then stills it's Artisans - like Ghosts -",
     "Denying they have been -",
               },
     {"THESE are the days when birds come back,",
@@ -74,6 +74,7 @@ public class BoardList {
       Board b = new Board(STATIC_MESSAGES[messagesIdx][i]);
       for(int j = 0; j < STATIC_MESSAGES[messagesIdx].length; j++) {
         Message m = new Message();
+        
         m.setText(STATIC_MESSAGES[messagesIdx][j]);
         b.addMessage(m);
       }
