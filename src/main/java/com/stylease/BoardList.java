@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class BoardList {
 
-  private static int STATIC_BOARD_COUNT = 5;
+  private static int STATIC_BOARD_COUNT = 20;
   private static String[][] STATIC_MESSAGES = {
     {
       "It sifts from Leaden Sieves -",
@@ -137,7 +137,8 @@ public class BoardList {
           model.addAttribute(account);
       }
     
-    return "home";
+    //return "home";
+      return showBoards(model) ;
   }
 
   @GetMapping("/m/{boardId}/{messageId}")

@@ -1,21 +1,7 @@
 package com.stylease;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.servlet.account.AccountResolver;
-
 import java.util.*;
 
-import javax.servlet.http.HttpServletRequest;
-   
-
-@Controller
 public class Board {
     public ArrayList<Message> messages;
     String name;
