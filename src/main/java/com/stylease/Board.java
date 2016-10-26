@@ -6,7 +6,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.account.AccountResolver;
+
 import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+   
 
 @Controller
 public class Board {
@@ -15,10 +22,16 @@ public class Board {
     public Board() {
         messages = new ArrayList<String>();
     }
+   
     
     @GetMapping("/")
-    public String welcome() {
-    	return "m_form";
+    public String welcomeHome(HttpServletRequest req, ModelMap model) {
+        Account account = AccountResolver.INSTANCE.getAccount(req);
+        if (account != null) {
+            model.addAttribute(account);
+        }
+    	
+    	return "home";
     }
 
 	@GetMapping("/m/{messageId}")
