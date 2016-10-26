@@ -13,12 +13,12 @@
     		<ul>
         		<c:forEach var="msg" items="${allMessages}">
             	<li>
-                	<a href="/m/${msg.id}"><c:out value="${msg.text}" /></a>
+                	<a href="/m/${board}/${msg.id}"><c:out value="${msg.text}" /></a>
             	</li>
         		</c:forEach>
     		</ul>
 
-    		<a href="/m_form">Post Message</a>
+    		<a href="/m_form/${board}">Post Message</a>
             
         </div>
     </jsp:body>
