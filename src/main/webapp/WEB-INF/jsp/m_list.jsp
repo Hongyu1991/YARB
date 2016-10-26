@@ -18,7 +18,7 @@
         		</c:forEach>
     		</ul>
 
-    		<a href="/m_form">Post Message</a>
+    		<a href="/m_form/${board}">Post Message</a>
             
         </div>
     </jsp:body>

@@ -161,8 +161,9 @@ public class BoardList {
     return "m";
   }
   
-    @GetMapping("/m_form")
-    public String addMessageForm(ModelMap model) {
+    @GetMapping("/m_form/{boardId}")
+    public String addMessageForm(@PathVariable int boardId, ModelMap model) {
+      model.addAttribute("board", boardId);
         return "m_form";
     }
   
