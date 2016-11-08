@@ -1,33 +1,38 @@
 /* stylease.sql */
 
-CREATE TABLE boards (
+CREATE TABLE board (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     created TIMESTAMP DEFAULT NOW(),
     enabled BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE TABLE users (
+CREATE TABLE app_user (
     id BIGSERIAL PRIMARY KEY,
     stormpath_username VARCHAR(255) UNIQUE
 );
 
-CREATE TABLE keys (
+CREATE TABLE app_key (
     id BIGSERIAL PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    can_read BOOLEAN NOT NULL,
+    can_write BOOLEAN NOT NULL,
+    invite_users BOOLEAN NOT NULL DEFAULT FALSE,
+    administer BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-INSERT INTO keys (name) VALUES
-('Public Read'), ('Public Write');
+INSERT INTO app_key (name, can_read, can_write) VALUES
+('Public', TRUE, TRUE);
+
 
 CREATE TABLE board_keys (
     boardid INTEGER,
     keyid INTEGER,
     PRIMARY KEY (boardid, keyid),
-    FOREIGN KEY (boardid) REFERENCES boards (id)
+    FOREIGN KEY (boardid) REFERENCES board (id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    FOREIGN KEY (keyid) REFERENCES keys (id)
+    FOREIGN KEY (keyid) REFERENCES app_key (id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -36,10 +41,10 @@ CREATE TABLE user_keys (
     userid INTEGER,
     keyid INTEGER,
     PRIMARY KEY (userid, keyid),
-    FOREIGN KEY (userid) REFERENCES users (id)
+    FOREIGN KEY (userid) REFERENCES app_user (id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    FOREIGN KEY (keyid) REFERENCES keys (id)
+    FOREIGN KEY (keyid) REFERENCES app_key (id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -50,10 +55,10 @@ CREATE TABLE messages (
     board INTEGER NOT NULL,
     author INTEGER NOT NULL,
     posted TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (board) REFERENCES boards (id)
+    FOREIGN KEY (board) REFERENCES board (id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    FOREIGN KEY (author) REFERENCES users (id)
+    FOREIGN KEY (author) REFERENCES app_user (id)
         ON UPDATE CASCADE
 );
 
