@@ -22,7 +22,7 @@ sudo apt-get install oracle-java8-installer -y
 sudo apt-get install ant -y
 
 sudo -u postgres psql -c "CREATE USER yarb WITH PASSWORD 'yarb4156';"
-# sudo -u postgres psql -c "DROP DATABASE stylease;"
+sudo -u postgres psql -c "DROP DATABASE stylease;"
 sudo -u postgres psql -c "CREATE DATABASE stylease;"
 sudo -u postgres psql -c "GRANT CONNECT ON DATABASE stylease TO yarb;"
 sudo -u postgres psql -c "GRANT ALL ON DATABASE stylease TO yarb;"
