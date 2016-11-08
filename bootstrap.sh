@@ -27,3 +27,5 @@ sudo -u postgres psql -c "CREATE DATABASE stylease;"
 sudo -u postgres psql -c "GRANT CONNECT ON DATABASE stylease TO yarb;"
 sudo -u postgres psql -c "GRANT ALL ON DATABASE stylease TO yarb;"
 sudo -u postgres psql -d stylease -f /vagrant/stylease.sql
+
+sudo cp /vagrant/psql_config/*.conf /etc/postgresql/9.3/main/
