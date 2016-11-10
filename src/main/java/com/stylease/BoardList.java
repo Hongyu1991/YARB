@@ -1,6 +1,8 @@
 package com.stylease;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +13,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stylease.entities.User;
+import com.stylease.repos.KeyDAO;
+import com.stylease.repos.UserDAO;
 
 import java.util.*;
 
@@ -85,6 +90,12 @@ public class BoardList {
   
   private ArrayList<Board> boards;
   
+  @Autowired
+  private KeyDAO keyDao;
+  
+  @Autowired
+  private UserDAO userDao;
+  
   private ArrayList<Board> getBoards() {
     ArrayList<Board> boardList = new ArrayList<>();
     for(int i = 0; i < STATIC_BOARD_COUNT; i++) {
@@ -107,6 +118,7 @@ public class BoardList {
   
   public BoardList() {
     boards = getBoards();
+    
   }
   
   @GetMapping("/b_list")
@@ -135,6 +147,7 @@ public class BoardList {
       Account account = AccountResolver.INSTANCE.getAccount(req);
       if (account != null) {
           model.addAttribute(account);
+          User u = userDao.getUserForStormpathAccount(account);
       }
     
     //return "home";
