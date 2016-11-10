@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stylease.entities.Key;
 import com.stylease.entities.User;
 import com.stylease.repos.KeyDAO;
 import com.stylease.repos.UserDAO;
@@ -118,7 +119,6 @@ public class BoardList {
   
   public BoardList() {
     boards = getBoards();
-    
   }
   
   @GetMapping("/b_list")
@@ -148,6 +148,18 @@ public class BoardList {
       if (account != null) {
           model.addAttribute(account);
           User u = userDao.getUserForStormpathAccount(account);
+          if(u == null) {
+            u = new User();
+            u.setAccount(account);
+            
+            ArrayList<Key> keys = new ArrayList<>(1);
+            keys.add(keyDao.getPublicKey());
+            u.setKeys(keys);
+            
+            userDao.addUser(u);
+          }
+          
+          req.getSession().setAttribute("user", u);
       }
     
     //return "home";

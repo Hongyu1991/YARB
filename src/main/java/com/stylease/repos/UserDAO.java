@@ -2,12 +2,19 @@ package com.stylease.repos;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import com.stormpath.sdk.account.Account;
+import com.stylease.entities.Key;
 import com.stylease.entities.User;
 import com.stylease.repos.KeyDAO.KeyRowMapper;
 
@@ -17,8 +24,29 @@ public class UserDAO extends AbstractIdDAO<User> {
   private static final String USER_FOR_NAME_SQL =
       "SELECT * FROM app_user WHERE stormpath_username = ?";
   
+  private static final String ADD_USER_SQL =
+      "INSERT INTO app_user (stormpath_username) VALUES (?)";
+  
+  private static final String USER_ID_COL = "id";
+  private static final String USER_NAME_COL = "stormpath_username";
+  
+  @Autowired
+  private KeyDAO keyDao;
+  
+  private SimpleJdbcInsert userAdder;
+  
   public UserDAO() {
-    super("app_user", "id");
+    super("app_user", USER_ID_COL);
+  }
+  
+  @Autowired
+  public void setDataSource(DataSource dataSource) {
+    super.setDataSource(dataSource);
+    
+    userAdder = new SimpleJdbcInsert(dataSource)
+      .withTableName("app_user")
+      .usingColumns(USER_NAME_COL)
+      .usingGeneratedKeyColumns(USER_ID_COL);
   }
   
   public User getUserForName(String name) {
@@ -28,7 +56,10 @@ public class UserDAO extends AbstractIdDAO<User> {
       return null;
     }
     
-    return lUser.get(0);
+    User u = lUser.get(0);
+    u.setKeys(keyDao.getForUser(u));
+    
+    return u;
   }
   
   public User getUserForStormpathAccount(Account acct) {
@@ -38,6 +69,20 @@ public class UserDAO extends AbstractIdDAO<User> {
     }
     u.setAccount(acct);
     return u;
+  }
+  
+  public void addUser(User u) {
+    HashMap<String, Object> args = new HashMap<>();
+    args.put(USER_NAME_COL, u.getName());
+    
+    Number id = userAdder.executeAndReturnKey(args);
+    u.setId(id.longValue());
+    
+    List<Key> keys = u.getKeys();
+    Iterator<Key> keyItr = keys.iterator();
+    while(keyItr.hasNext()) {
+      keyDao.addKeyToUser(u, keyItr.next());
+    }
   }
   
   public class UserRowMapper implements RowMapper<User> {
@@ -51,6 +96,10 @@ public class UserDAO extends AbstractIdDAO<User> {
       
       return user;
     }
+    
+  }
+  
+  public void addUser(String name) {
     
   }
 }

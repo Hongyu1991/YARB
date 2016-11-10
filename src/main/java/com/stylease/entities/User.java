@@ -1,6 +1,7 @@
 package com.stylease.entities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.stormpath.sdk.account.Account;
 
@@ -9,7 +10,7 @@ public class User extends IdItem<Long> {
   private String name;
   private Account account;
   
-  private ArrayList<Key> keys;
+  private List<Key> keys;
   
   //public User(String name)
   
@@ -26,6 +27,16 @@ public class User extends IdItem<Long> {
   }
   
   public void setAccount(Account acct) {
+    this.name = acct.getUsername();
     this.account = acct;
   }
+  
+  public List<Key> getKeys() {
+    return this.keys;
+  }
+  
+  public void setKeys(List<Key> keys) {
+    this.keys = keys;
+  }
+  
 }
