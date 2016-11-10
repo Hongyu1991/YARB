@@ -38,6 +38,10 @@ dependencies {
     compile("javax.servlet:jstl")
     providedCompile "javax.servlet.jsp:jsp-api:2.2"
     
+    compile("org.postgresql:postgresql:9.3-1100-jdbc4")
+    compile("org.springframework:spring-jdbc:4.3.3.RELEASE")
+    compile("commons-dbcp:commons-dbcp:1.4")
+    
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     providedRuntime("org.apache.tomcat.embed:tomcat-embed-jasper")
     testCompile("junit:junit")
