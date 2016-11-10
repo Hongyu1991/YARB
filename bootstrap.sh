@@ -25,7 +25,12 @@ sudo -u postgres psql -c "CREATE USER yarb WITH PASSWORD 'yarb4156';"
 sudo -u postgres psql -c "DROP DATABASE stylease;"
 sudo -u postgres psql -c "CREATE DATABASE stylease;"
 sudo -u postgres psql -c "GRANT CONNECT ON DATABASE stylease TO yarb;"
-sudo -u postgres psql -c "GRANT ALL ON DATABASE stylease TO yarb;"
 sudo -u postgres psql -d stylease -f /vagrant/stylease.sql
+sudo -u postgres psql -c "GRANT ALL ON DATABASE stylease TO yarb;"
+
+for tbl in $(sudo -u postgres psql -qAt -c "select tablename from pg_tables where schemaname = 'public';" stylease) ; do
+    sudo -u postgres psql -d stylease -c "ALTER TABLE ${tbl} OWNER TO yarb"
+done
 
 sudo cp /vagrant/psql_config/*.conf /etc/postgresql/9.3/main/
+sudo service postgresql restart
