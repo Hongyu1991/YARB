@@ -1,12 +1,21 @@
 @CHARSET "ISO-8859-1";
 
+html, body {
+	height: 100vh;
+}
+
+.header {
+	height: 10%;
+}
+
 .fill {
-	height: 100%;
+	height: 90%;
 }
 
 .jumbotron {
-	height: 100%;
+	height: 90%;
 }
+
 
 textarea {
 	resize: none;
@@ -15,8 +24,9 @@ textarea {
 }
 
 .msgarea {
-	height: 300px;
-	max-height: 300px;
+	/*height: 300px;*/
+	/*height: 300px;*/
+	/*max-height: 300px;*/
 	overflow-y: scroll;
 	background-color: white;
 }
