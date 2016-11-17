@@ -34,7 +34,7 @@
 									</div>
 								<div class="row">
 									<div class="col-sm-9"></div>
-									<div id="btnSend" class="col-sm-3 btn-primary">
+									<div id="btnSend" class="col-sm-3 btn btn-primary">
 										Send
 									</div>
 								</div>
