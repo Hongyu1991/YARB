@@ -8,31 +8,34 @@
     <jsp:body>
         <div class="jumbotron" id="welcome">
  
-			<h1>All Messages</h1>
+			<h2>All Messages</h2>
 				<div class="row fill">
 					<div class="col-md-2">
-						<h2>Boards</h2>
+						<h3>Boards</h3>
 						Boards go here
 					</div>
 					<div class="col-md-10 fill">
-						<div class="msgarea">
-							<h2>Messages</h2>
-							<c:forEach var="msg" items="${allMessages}">
-			            	<div id="message_${msg.id}" class="message">
-			                	<a href="/m/${board}/${msg.id}"><c:out value="${msg.text}" /></a>
-			            	</div>
-			        		</c:forEach>
-						</div>
 						<div class="row">
-							<div class="col-sm-8">
-								<textarea id="msgTxt">Your message</textarea>
+							<h3>Messages</h3>
+						</div>
+						<div class="row fill">
+							<div class="col-sm-7 fill">
+								<div class="msgarea fill">
+									<c:forEach var="msg" items="${allMessages}">
+					            	<div id="message_${msg.id}" class="message">
+					                	<a href="/m/${board}/${msg.id}"><c:out value="${msg.text}" /></a>
+					            	</div>
+					        		</c:forEach>
+								</div>
 							</div>
-							<div class="col-sm-4">
+							<div class="col-sm-5">
+								<textarea id="msgTxt">Your message</textarea>
+								<div>Attributes:</div>
 								<div class="row">
-									<div class="col-sm-3">
+									<div class="col-sm-6">
 										<select id="attrSel"></select>
 									</div>
-									<div class="col-sm-3">
+									<div class="col-sm-6">
 										<input type="text" id="valTxt" />
 									</div>
 								</div>
@@ -40,6 +43,7 @@
 						</div>
 					</div>
 				</div>
+				
 			
 			<!-- 
     		<ul>
