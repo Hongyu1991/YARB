@@ -19,7 +19,9 @@ public class MessageController {
   }
   
   @MessageMapping("/board/{boardid}")
-  public void handle(Message inbound, @DestinationVariable int boardid) {
+  public void handle(String inbound, @DestinationVariable int boardid) {
+    System.out.println("Message: " + inbound);
+    System.out.println("BoardID: " + boardid);
     this.template.convertAndSend("/topic/board/" + boardid, inbound);
   }
   
