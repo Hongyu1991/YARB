@@ -29,8 +29,16 @@
 								</div>
 							</div>
 							<div class="col-sm-5">
-								<textarea id="msgTxt">Your message</textarea>
-								<div>Attributes:</div>
+								<div class="row">
+									<textarea id="msgTxt">Your message</textarea>
+									</div>
+								<div class="row">
+									<div class="col-sm-9"></div>
+									<div id="btnSend" class="col-sm-3 btn-primary">
+										Send
+									</div>
+								</div>
+								<div class="row">Attributes:</div>
 								<div class="row">
 									<div class="col-sm-6">
 										<select id="attrSel"></select>
