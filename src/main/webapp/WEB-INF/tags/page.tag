@@ -4,7 +4,7 @@
 <%@attribute name="title" required="false" %>
  
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -49,9 +49,17 @@
             </ul>
  
             <h3 class="text-muted">Stylease</h3>
- 
+            
         </div>
- 
+        <c:if test="${!empty errors}">
+	        <div class="alert alert-danger">
+	        	<ul>
+	        		<c:forEach var="error" items="${errors}">
+	        			<li>${error}</li>
+	        		</c:forEach>
+	        	</ul>
+	        </div>
+        </c:if>
         <jsp:doBody/>
  
     </div>
