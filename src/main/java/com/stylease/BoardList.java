@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stylease.entities.Key;
+import com.stylease.entities.Message;
 import com.stylease.entities.User;
 import com.stylease.repos.KeyDAO;
 import com.stylease.repos.UserDAO;
+import com.stylease.entities.Board;
 
 import java.util.*;
 
@@ -102,8 +104,8 @@ public class BoardList {
     for(int i = 0; i < STATIC_BOARD_COUNT; i++) {
       int messagesIdx = i % STATIC_MESSAGES.length;
       Board b = new Board();
-      b.name = STATIC_MESSAGES[messagesIdx][0];
-      b.id = i;
+      b.setName(STATIC_MESSAGES[messagesIdx][0]);
+      b.setId((long)i);
       for(int j = 0; j < STATIC_MESSAGES[messagesIdx].length; j++) {
         Message m = new Message();
         
@@ -133,11 +135,11 @@ public class BoardList {
       throw new ResourceNotFoundException();
     }
     
-    for(int i = 0; i < boards.get(boardId).messages.size(); i++) {
-      System.out.println(boards.get(boardId).id);
+    for(int i = 0; i < boards.get(boardId).getMessages().size(); i++) {
+      System.out.println(boards.get(boardId).getId());
     }
     
-    model.addAttribute("allMessages", boards.get(boardId).messages);
+    model.addAttribute("allMessages", boards.get(boardId).getMessages());
     model.addAttribute("board", boardId);
     return "m_list";
   }
@@ -172,8 +174,8 @@ public class BoardList {
     String post = "No message with that ID.";
     if(this.boards.size() > boardId) {
       Board b = boards.get(boardId);
-      if (b.messages.size() > messageId) {
-          post = b.messages.get(messageId).text;
+      if (b.getMessages().size() > messageId) {
+          post = b.getMessages().get(messageId).getText();
       }
       
       System.out.println(messageId);
@@ -201,21 +203,44 @@ public class BoardList {
     
     Board b = boards.get(boardId);
     
-    Message m = new Message(b.messages.size(), message);  
-    b.addMessage(m, b.messages.size());
-    model.addAttribute("allMessages", b.messages);
+    Message m = new Message(b.getMessages().size(), message);  
+    b.addMessage(m, b.getMessages().size());
+    model.addAttribute("allMessages", b.getMessages());
     model.addAttribute("board", boardId);
     return "m_list";
   }
   
     @GetMapping("/b_add")
-    public String addBoardForm(ModelMap model) {
+    public String addBoardForm(HttpServletRequest req, ModelMap model) {
       //model.addAttribute("board", boardId);
+      Board b = new Board();
+      req.getSession().setAttribute("board", b);
+      
       model.addAttribute("board_action", "Create");
       model.addAttribute("submit_action", "Create");
         return "b_form";
     }
     
+    @PostMapping(path = "/b_add", params = "saveboard")
+    public String addBoardSubmit(ModelMap model) {
+      model.addAttribute("board_action", "Create");
+      model.addAttribute("submit_action", "Create");
+      
+      System.out.println("saveboard");
+      
+      return "b_form";
+    }
+    
+    @PostMapping(path = "/b_add", params = "userop")
+    public String userBoardMod(ModelMap model) {
+      model.addAttribute("board_action", "Create");
+      model.addAttribute("submit_action", "Create");
+      
+      System.out.println("userop");
+      
+      return "b_form";
+    }
+
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
   public class ResourceNotFoundException extends RuntimeException {
 
