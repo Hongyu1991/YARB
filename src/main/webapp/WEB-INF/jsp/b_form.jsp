@@ -17,10 +17,14 @@
 					<form method="POST">
 						<div class="form-group">
 							<label for="txtBoardName">Name:</label>
-							<input type="text" class="form-control" id="txtBoardName" name="boardName" />
+							<input type="text" class="form-control" id="txtBoardName" name="boardName" value="${param.boardName}"/>
 							
 							<label for="selUsers">Users:</label>
-							<select id="selUsers" name="users" class="form-control" size="5"></select>
+							<select id="selUsers" name="users" class="form-control" size="5">
+								<c:forEach var="uentry" items="${usertbl}">
+									<option value="${uentry.key}">${ uentry.value.getName() }</option>
+								</c:forEach>
+							</select>
 							
 							<label for="txtUser">Add user:</label>
 							<input type="text" class="form-control" id="txtUser" name="user" />
@@ -55,18 +59,21 @@
 									</label>
 								</div>
 							
-								<button type="submit" value="Add User" class="btn btn-success">Add User</button>
+								<button name="userop" type="submit" value="${userop_add}" class="btn btn-success">Add User</button>
+								<button name="userop" type="submit" value="${userop_mod}" class="btn btn-info" style="display:none;">Modify Permissions</button>
 							</fieldset>
 							
 							<div class="form-check">
 								<label for="chkPublic">
-									<input type="checkbox" id="chkPublic" name="public" class="form-check-input"/>
+									<input type="checkbox" id="chkPublic" name="ispublic" class="form-check-input" ${!empty param.ispublic ? 'checked' : ''}/>
 									Public board (anyone can view)
 								</label>
 							</div>
 						</div>
 						
-						<button type="submit" value="${submit_action}" class="btn btn-primary">${submit_action}</button>
+						<button name="saveboard" type="submit" value="${submit_action}" class="btn btn-primary">${submit_action}</button>
+						
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 					</form>
 				</div>
 			</div>            
