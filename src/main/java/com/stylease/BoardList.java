@@ -23,6 +23,7 @@ import com.stylease.entities.Board;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Controller
 public class BoardList {
@@ -104,6 +105,7 @@ public class BoardList {
     for(int i = 0; i < STATIC_BOARD_COUNT; i++) {
       int messagesIdx = i % STATIC_MESSAGES.length;
       Board b = new Board();
+      b.setMessages(new LinkedList<>());
       b.setName(STATIC_MESSAGES[messagesIdx][0]);
       b.setId((long)i);
       for(int j = 0; j < STATIC_MESSAGES[messagesIdx].length; j++) {
@@ -210,36 +212,7 @@ public class BoardList {
     return "m_list";
   }
   
-    @GetMapping("/b_add")
-    public String addBoardForm(HttpServletRequest req, ModelMap model) {
-      //model.addAttribute("board", boardId);
-      Board b = new Board();
-      req.getSession().setAttribute("board", b);
-      
-      model.addAttribute("board_action", "Create");
-      model.addAttribute("submit_action", "Create");
-        return "b_form";
-    }
     
-    @PostMapping(path = "/b_add", params = "saveboard")
-    public String addBoardSubmit(ModelMap model) {
-      model.addAttribute("board_action", "Create");
-      model.addAttribute("submit_action", "Create");
-      
-      System.out.println("saveboard");
-      
-      return "b_form";
-    }
-    
-    @PostMapping(path = "/b_add", params = "userop")
-    public String userBoardMod(ModelMap model) {
-      model.addAttribute("board_action", "Create");
-      model.addAttribute("submit_action", "Create");
-      
-      System.out.println("userop");
-      
-      return "b_form";
-    }
 
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
   public class ResourceNotFoundException extends RuntimeException {
