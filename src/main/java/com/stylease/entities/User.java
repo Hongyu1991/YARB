@@ -39,4 +39,8 @@ public class User extends IdItem<Long> {
     this.keys = keys;
   }
   
+  public void addKey(Key k) {
+    this.keys.add(k);
+  }
+  
 }
