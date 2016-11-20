@@ -208,6 +208,14 @@ public class BoardList {
     return "m_list";
   }
   
+    @GetMapping("/b_add")
+    public String addBoardForm(ModelMap model) {
+      //model.addAttribute("board", boardId);
+      model.addAttribute("board_action", "Create");
+      model.addAttribute("submit_action", "Create");
+        return "b_form";
+    }
+    
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
   public class ResourceNotFoundException extends RuntimeException {
 
