@@ -1,5 +1,7 @@
 package com.stylease.repos;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +39,11 @@ public abstract class AbstractIdDAO<ObjType> {
   }
   
   public ObjType getForId(long id, RowMapper<ObjType> mapper) {
-    ObjType obj = this.jdbcTemplate.queryForObject(obj_for_id_sql, new Object[]{id}, mapper);
+    List<ObjType> objList = this.jdbcTemplate.query(obj_for_id_sql, new Object[]{id}, mapper);
+    if(objList.size() == 0) {
+      return null;
+    }
     
-    return obj;
+    return objList.get(0);
   }
 }
