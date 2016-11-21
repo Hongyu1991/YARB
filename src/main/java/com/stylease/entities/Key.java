@@ -20,4 +20,20 @@ public class Key extends IdItem<Long> {
   public void setPermission(int perm, boolean value) {
     perms[perm] = value;
   }
+  
+  public boolean canRead() {
+    return getPermission(CAN_READ);
+  }
+  
+  public boolean canWrite() {
+    return getPermission(CAN_WRITE);
+  }
+  
+  public boolean canInvite() {
+    return getPermission(INVITE_USERS);
+  }
+  
+  public boolean isAdmin() {
+    return getPermission(ADMINISTER);
+  }
 }
