@@ -8,7 +8,7 @@
     <jsp:body>
         <div class="jumbotron" id="welcome">
  
-			<h2>All Messages</h2>
+			<h2>${!empty title ? title : 'All Messages' }</h2>
 				<div class="row fill">
 					<div class="col-md-2">
 						<h3>Boards</h3>
