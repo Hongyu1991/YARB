@@ -18,7 +18,7 @@
 					<form method="POST">
 						<div class="form-group">
 							<label for="txtBoardName">Name:</label>
-							<input type="text" class="form-control" id="txtBoardName" name="boardName" value="${param.boardName}"/>
+							<input type="text" class="form-control" id="txtBoardName" name="boardName" value="${!empty boardName ? boardName : param.boardName}"/>
 							
 							<label for="selUsers">Users:</label>
 							<select id="selUsers" name="users" class="form-control" size="5">
@@ -66,7 +66,7 @@
 							
 							<div class="form-check">
 								<label for="chkPublic">
-									<input type="checkbox" id="chkPublic" name="ispublic" class="form-check-input" ${!empty param.ispublic ? 'checked' : ''}/>
+									<input type="checkbox" id="chkPublic" name="ispublic" class="form-check-input" ${!empty param.ispublic ? 'checked' : !empty ispublic ? 'checked' : ''}/>
 									Public board (anyone can view)
 								</label>
 							</div>
