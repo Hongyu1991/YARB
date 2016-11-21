@@ -21,9 +21,11 @@ import com.stylease.repos.KeyDAO;
 import com.stylease.repos.UserDAO;
 import com.stylease.entities.Board;
 
+import java.io.IOException;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -223,4 +225,41 @@ public class BoardList {
     model.addAttribute("board", boardId);
     return "m_list";
   }
+    
+    @GetMapping("/b/{boardId}/delete") 
+    public String deleteBoard(HttpServletRequest req, @PathVariable int boardId, ModelMap model) {
+      Board b = boardDao.getForId(boardId);
+      if(b == null) {
+        throw new ResourceNotFoundException();
+      }
+      
+      model.addAttribute("boardName", b.getName());
+      String referrer = req.getHeader("Referer");
+      if(referrer == null) {
+        referrer = "/";
+      }
+      
+      model.addAttribute("nolink", referrer);
+      
+      return "b_del";
+    }
+    
+    @PostMapping(path = "/b/{boardId}/delete", params = "del")
+    public String deleteBoard(HttpServletResponse resp, @PathVariable int boardId, ModelMap model) {
+      Board b = boardDao.getForId(boardId);
+      if(b == null) {
+        throw new ResourceNotFoundException();
+      }
+      
+      boardDao.deleteBoard(b);
+      try {
+        resp.sendRedirect("/b_list");
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+        model.addAttribute("errors", new String[]{"Board deleted; error redirecting"});
+      }
+      
+      return "b_del";
+    }
 }
