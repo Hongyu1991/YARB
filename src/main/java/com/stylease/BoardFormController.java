@@ -235,7 +235,8 @@ public class BoardFormController {
     return (User)o;
   }
   
-  private void setFormModel(ModelMap model) {
+  private void setFormModel(ModelMap model, Key perms) {
+    model.addAttribute("perms", perms);
     model.addAttribute("userop_add", USEROP_ADD);
     model.addAttribute("userop_mod", USEROP_MOD);
     model.addAttribute("userop_rem", USEROP_REM);
@@ -244,18 +245,25 @@ public class BoardFormController {
   private void setCreateModel(ModelMap model) {
     model.addAttribute("board_action", "Create");
     model.addAttribute("submit_action", "Create");
-    setFormModel(model);
+    setFormModel(model, this.getAdderPerms());
   }
   
-  private void setEditModel(ModelMap model) {
+  private void setEditModel(ModelMap model, Key perms) {
     model.addAttribute("board_action", "Edit");
     model.addAttribute("submit_action", "Submit");
-    setFormModel(model);
+    setFormModel(model, perms);
   }
   
   @GetMapping("/m_list/{boardId}/settings")
   public String boardSettings(HttpServletRequest req, @PathVariable int boardId, ModelMap model) {
-    Board b = boardDao.getForId(boardId);
+    
+    Board b = getBoardOrFail(boardId);
+    Key perms = this.getCurrentUserKey(req, b);
+    
+    if(!(perms.canInvite() || perms.isAdmin())) {
+      throw new ResourceForbiddenException();
+    }
+    
     HashMap<Long, User> userTbl = new HashMap<>();
     HashMap<Long, Key> userKeys = new HashMap<>();
     
@@ -284,7 +292,8 @@ public class BoardFormController {
     sesh.setAttribute("userkeys", userKeys);
     
     model.addAttribute("boardName", b.getName());
-    setEditModel(model);
+    
+    setEditModel(model, perms);
     
     return "b_form";
   }
@@ -295,7 +304,13 @@ public class BoardFormController {
       @RequestParam("userop") String userop,
       ModelMap model) {
     
-    Board b = boardDao.getForId(boardId);
+    Board b = getBoardOrFail(boardId);
+    Key perms = this.getCurrentUserKey(req, b);
+    
+    if(!(perms.canInvite() || perms.isAdmin())) {
+      throw new ResourceForbiddenException();
+    }
+    
     HttpSession sesh = req.getSession();
     HashMap<Long, User> userTbl = (HashMap<Long, User>)sesh.getAttribute("usertbl");
     HashMap<Long, Key> userKeys = (HashMap<Long, Key>)sesh.getAttribute("userkeys");
@@ -305,11 +320,23 @@ public class BoardFormController {
       
       User u = null;
       switch(userop) {
-      case USEROP_ADD:
       case USEROP_MOD:
+        if(!perms.isAdmin()) {
+          model.addAttribute("errors", new String[]{"You are not allowed to modify user permissions on this board."});
+          
+          setEditModel(model, perms);
+          return "b_form";
+        }
+      case USEROP_ADD:
         u = getUserFromForm(userop, req, model);
         break;
       case USEROP_REM:
+        if(!perms.isAdmin()) {
+          model.addAttribute("errors", new String[]{"You are not allowed to remove users from this board."});
+          
+          setEditModel(model, perms);
+          return "b_form";
+        }
         long uid = Long.parseLong(req.getParameter("users"));
         userTbl.remove(uid);
         Key k = userKeys.remove(uid);
@@ -349,7 +376,8 @@ public class BoardFormController {
       throw new ResourceNotFoundException();
     }
     
-    setEditModel(model);
+    perms = this.getCurrentUserKey(req, b);
+    setEditModel(model, perms);
     return "b_form";
   }
   
@@ -359,15 +387,17 @@ public class BoardFormController {
       @PathVariable int boardId,
       ModelMap model) {
     
-    Board b = boardDao.getForId(boardId);
-    if(b == null) {
-      throw new ResourceNotFoundException();
+    Board b = getBoardOrFail(boardId);
+    Key perms = this.getCurrentUserKey(req, b);
+    
+    if(!perms.isAdmin()) {
+      throw new ResourceForbiddenException();
     }
     
     String boardName = req.getParameter("boardName");
     if(boardName == null || (boardName = boardName.trim()).length() == 0) {
       model.addAttribute("errors", new String[]{"You must give this board a name."});
-      setEditModel(model);
+      setEditModel(model, perms);
       return "b_form";
     }
     
@@ -393,7 +423,7 @@ public class BoardFormController {
       model.addAttribute("errors", new String[]{"Something went wrong, but your changes have been saved."});
       setCreateModel(model);
     }
-    setEditModel(model);
+    setEditModel(model, perms);
     return "b_form";
   }
   
@@ -414,7 +444,10 @@ public class BoardFormController {
         model.addAttribute("errors", new String[]{"The user " + username + " has already been added."});
         u = null;
       }
-      userTbl.put(u.getId(), u);
+      
+      if(u != null) {
+        userTbl.put(u.getId(), u);
+      }
       break;
     case USEROP_MOD:
       try {
@@ -426,5 +459,29 @@ public class BoardFormController {
     }
     
     return u;
+  }
+  
+  private Key getCurrentUserKey(HttpServletRequest req, Board b) {
+    User u = getUserFromSession(req);
+    return keyDao.getBoardPermissions(u, b);
+  }
+  
+  private Board getBoardOrFail(int boardId) {
+    Board b = boardDao.getForId(boardId);
+    if(b == null) {
+      throw new ResourceNotFoundException();
+    }
+    
+    return b;
+  }
+  
+  private Key getAdderPerms() {
+    Key k = new Key();
+    k.setPermission(Key.CAN_READ, true);
+    k.setPermission(Key.CAN_WRITE, true);
+    k.setPermission(Key.INVITE_USERS, true);
+    k.setPermission(Key.ADMINISTER, true);
+    
+    return k;
   }
 }
