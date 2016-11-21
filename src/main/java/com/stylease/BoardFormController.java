@@ -304,7 +304,6 @@ public class BoardFormController {
       model.addAttribute("boardName", b.getName());
       
       User u = null;
-      
       switch(userop) {
       case USEROP_ADD:
       case USEROP_MOD:
