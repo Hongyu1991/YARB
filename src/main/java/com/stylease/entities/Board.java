@@ -27,6 +27,10 @@ public class Board extends IdItem<Long> {
     this.created = created;
   }
   
+  public void setCreated(java.sql.Date created) {
+    this.created = new Date(created.getTime());
+  }
+  
   public boolean getEnabled() {
     return this.enabled;
   }
