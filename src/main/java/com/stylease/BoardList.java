@@ -223,14 +223,4 @@ public class BoardList {
     model.addAttribute("board", boardId);
     return "m_list";
   }
-  
-    
-
-  @ResponseStatus(value = HttpStatus.NOT_FOUND)
-  public class ResourceNotFoundException extends RuntimeException {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 7963054889196792099L;}
 }
