@@ -30,6 +30,7 @@ public class BoardFormController {
 
   private static final String USEROP_ADD = "useradd";
   private static final String USEROP_MOD = "usermod";
+  private static final String USEROP_REM = "userrem";
   
   @Autowired
   private KeyDAO keyDao;
@@ -80,10 +81,11 @@ public class BoardFormController {
       ModelMap model) {
     
     User u = null;
-    HttpSession sesh = req.getSession();
+    HttpSession sesh = req.getSession(false);
     
     HashMap<Long, User> userTbl = (HashMap<Long, User>)sesh.getAttribute("usertbl");
     Board board = (Board)sesh.getAttribute("newboard");
+    HashMap<Long, Key> userKeys = (HashMap<Long, Key>)sesh.getAttribute("userkeys");
     
     switch(op) {
     case USEROP_ADD:
@@ -102,14 +104,23 @@ public class BoardFormController {
         u = userTbl.get(uid);
       }
       catch(NumberFormatException ex) {}
+      break;
+    case USEROP_REM:
+      try {
+        long uid = Long.parseLong(req.getParameter("users"));
+        userTbl.remove(uid);
+        userKeys.remove(uid);
+      }
+      catch(NumberFormatException ex) {}
+      break;
     }
     
     if(u != null) {
     
-      HashMap<Long, Key> userKeys = (HashMap<Long, Key>)sesh.getAttribute("userkeys");
       Key k = userKeys.get(u.getId());
       if(k == null) {
         k = new Key();
+        userKeys.put(u.getId(), k);
       }
       
       boolean canRead = req.getParameter("can_read") != null;
@@ -121,13 +132,11 @@ public class BoardFormController {
       k.setPermission(Key.CAN_WRITE, canWrite);
       k.setPermission(Key.INVITE_USERS, canInvite);
       k.setPermission(Key.ADMINISTER, administer);
-      
-      userKeys.put(u.getId(), k);
     }
     
     setCreateModel(model);
     model.addAttribute("usertbl", userTbl);
-    
+    model.addAttribute("userkeys", userKeys);
     //System.out.println(board.getName());
     /*System.out.println(canRead);
     System.out.println(canWrite);
@@ -135,7 +144,7 @@ public class BoardFormController {
     System.out.println(administer);*/
     board.setName(boardName);
     model.addAttribute("board", board);
-    System.out.println(op);
+    System.out.println("Op: " + op);
     
     return "b_form";
   }
@@ -172,6 +181,7 @@ public class BoardFormController {
     model.addAttribute("submit_action", "Create");
     model.addAttribute("userop_add", USEROP_ADD);
     model.addAttribute("userop_mod", USEROP_MOD);
+    model.addAttribute("userop_rem", USEROP_REM);
   }
   
 }
