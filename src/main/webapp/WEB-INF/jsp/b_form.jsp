@@ -22,7 +22,7 @@
 							
 							<label for="selUsers">Users:</label>
 							<select id="selUsers" name="users" class="form-control" size="5">
-								<c:forEach var="uentry" items="${usertbl}">
+								<c:forEach var="uentry" items="${sessionScope.usertbl}">
 									<option value="${uentry.key}">${ uentry.value.getName() }</option>
 								</c:forEach>
 							</select>
@@ -81,7 +81,7 @@
         </div>
         <script type="text/javascript">
         	var perms = {
-        		<c:forEach var="entry" items="${userkeys}">
+        		<c:forEach var="entry" items="${sessionScope.userkeys}">
         			${entry.key}: {
         				"can_read": ${entry.value.canRead()},
         				"can_write": ${entry.value.canWrite()},
