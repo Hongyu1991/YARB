@@ -31,6 +31,9 @@ public class BoardDAO extends AbstractIdDAO<Board> {
       + " enabled = ?"
       + " WHERE id = ?";
   
+  private static final String DEL_BOARD_SQL =
+      "DELETE FROM board WHERE id = ?";
+  
   protected BoardDAO() {
     super("board", "id");
   }
@@ -71,6 +74,10 @@ public class BoardDAO extends AbstractIdDAO<Board> {
   
   public int updateBoard(Board b) {
     return this.jdbcTemplate.update(UPDATE_BOARD_SQL, b.getName(), b.getEnabled(), b.getId());
+  }
+  
+  public int deleteBoard(Board b) {
+    return this.jdbcTemplate.update(DEL_BOARD_SQL, b.getId());
   }
   
   public class BoardRowMapper implements RowMapper<Board> {
