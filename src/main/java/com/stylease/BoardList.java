@@ -16,6 +16,7 @@ import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stylease.entities.Key;
 import com.stylease.entities.Message;
 import com.stylease.entities.User;
+import com.stylease.repos.BoardDAO;
 import com.stylease.repos.KeyDAO;
 import com.stylease.repos.UserDAO;
 import com.stylease.entities.Board;
@@ -100,6 +101,9 @@ public class BoardList {
   @Autowired
   private UserDAO userDao;
   
+  @Autowired
+  private BoardDAO boardDao;
+  
   private ArrayList<Board> getBoards() {
     ArrayList<Board> boardList = new ArrayList<>();
     for(int i = 0; i < STATIC_BOARD_COUNT; i++) {
@@ -133,15 +137,23 @@ public class BoardList {
   
   @GetMapping("/m_list/{boardId}")
   public String viewAllMessages(@PathVariable int boardId, ModelMap model) {
-    if(boardId >= boards.size()) {
-      throw new ResourceNotFoundException();
+    
+    Board b = boardDao.getForId(boardId);
+    
+    if(b == null) {
+      if(boardId >= boards.size()) {
+        throw new ResourceNotFoundException();
+      }
+      
+      for(int i = 0; i < boards.get(boardId).getMessages().size(); i++) {
+        System.out.println(boards.get(boardId).getId());
+      }
+      
+      b = boards.get(boardId);
     }
     
-    for(int i = 0; i < boards.get(boardId).getMessages().size(); i++) {
-      System.out.println(boards.get(boardId).getId());
-    }
-    
-    model.addAttribute("allMessages", boards.get(boardId).getMessages());
+    model.addAttribute("title", b.getName());
+    model.addAttribute("allMessages", b.getMessages());
     model.addAttribute("board", boardId);
     return "m_list";
   }
