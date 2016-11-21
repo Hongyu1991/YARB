@@ -24,6 +24,11 @@ public class UserDAO extends AbstractIdDAO<User> {
   private static final String USER_FOR_NAME_SQL =
       "SELECT * FROM app_user WHERE stormpath_username = ?";
   
+  private static final String USERS_FOR_KEY_SQL =
+      "SELECT u.* FROM app_user u"
+      + " INNER JOIN user_keys uk ON u.id = uk.userid"
+      + " WHERE uk.keyid = ?";
+  
   private static final String ADD_USER_SQL =
       "INSERT INTO app_user (stormpath_username) VALUES (?)";
   
@@ -83,6 +88,10 @@ public class UserDAO extends AbstractIdDAO<User> {
     while(keyItr.hasNext()) {
       keyDao.addKeyToUser(u, keyItr.next());
     }
+  }
+  
+  public List<User> getUsersForKey(Key k) {
+    return this.jdbcTemplate.query(USERS_FOR_KEY_SQL, new Object[]{k.getId()}, new UserRowMapper());
   }
   
   public class UserRowMapper implements RowMapper<User> {
