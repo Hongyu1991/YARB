@@ -36,6 +36,27 @@ public class KeyDAO extends AbstractIdDAO<Key> {
   private static final String KEY_FOR_NAME_SQL =
       "SELECT * FROM app_key WHERE name = ?";
   
+  private static final String UPDATE_KEY_SQL =
+      "UPDATE app_key SET"
+      + " name = ?,"
+      + " can_read = ?,"
+      + " can_write = ?,"
+      + " invite_users = ?,"
+      + " administer = ?"
+      + " WHERE id = ?";
+  
+  private static final String DELETE_KEY_SQL =
+      "DELETE FROM app_key WHERE id = ?";
+  
+  private static final String REMOVE_KEY_FROM_BOARD_SQL =
+      "DELETE FROM board_keys WHERE boardid = ? AND keyid = ?";
+  
+  private static final String KEY_FOR_BOARD_SQL =
+      "SELECT k.* FROM app_key k"
+      + " INNER JOIN board_keys bk ON k.id = bk.keyid"
+      + " WHERE k.id = ?"
+      + " AND bk.boardid = ?";
+  
   private static final String ADD_KEY_TO_USER_SQL =
       "INSERT INTO user_keys VALUES (?, ?)";
   
@@ -108,11 +129,44 @@ public class KeyDAO extends AbstractIdDAO<Key> {
   }
   
   public void addKeyToBoard(Board b, Key k) {
-    HashMap<String, Object> args = new HashMap<>();
-    args.put(BOARDID_COL, b.getId());
-    args.put(KEYID_COL, k.getId());
+    Key prevKey = this.getKeyForBoard(b, k);
     
-    boardKeyAdder.execute(args);
+    if(prevKey == null) {
+      HashMap<String, Object> args = new HashMap<>();
+      args.put(BOARDID_COL, b.getId());
+      args.put(KEYID_COL, k.getId());
+      
+      boardKeyAdder.execute(args);
+    }
+  }
+  
+  public int updateKey(Key k) {
+    
+    return this.jdbcTemplate.update(UPDATE_KEY_SQL,
+        k.getName(),
+        k.canRead(),
+        k.canWrite(),
+        k.canInvite(),
+        k.isAdmin(),
+        k.getId());
+  }
+  
+  public int deleteKey(Key k) {
+    return this.jdbcTemplate.update(DELETE_KEY_SQL, k.getId());
+  }
+  
+  public int removeKeyFromBoard(Board b, Key k) {
+    return this.jdbcTemplate.update(REMOVE_KEY_FROM_BOARD_SQL, b.getId(), k.getId());
+  }
+  
+  public Key getKeyForBoard(Board b, Key k) {
+    Object[] args = {k.getId(), b.getId()};
+    List<Key> lstKeys = this.jdbcTemplate.query(KEY_FOR_BOARD_SQL, args, new KeyRowMapper());
+    if(lstKeys.size() == 0) {
+      return null;
+    }
+    
+    return lstKeys.get(0);
   }
   
   public class KeyRowMapper implements RowMapper<Key> {
