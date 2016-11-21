@@ -25,6 +25,12 @@ public class BoardDAO extends AbstractIdDAO<Board> {
   
   private SimpleJdbcInsert boardAdder;
   
+  private static final String UPDATE_BOARD_SQL =
+      "UPDATE board SET"
+      + " name = ?,"
+      + " enabled = ?"
+      + " WHERE id = ?";
+  
   protected BoardDAO() {
     super("board", "id");
   }
@@ -61,6 +67,10 @@ public class BoardDAO extends AbstractIdDAO<Board> {
     
     b.setKeys(keyDao.getForBoard(b));
     return b;
+  }
+  
+  public int updateBoard(Board b) {
+    return this.jdbcTemplate.update(UPDATE_BOARD_SQL, b.getName(), b.getEnabled(), b.getId());
   }
   
   public class BoardRowMapper implements RowMapper<Board> {
