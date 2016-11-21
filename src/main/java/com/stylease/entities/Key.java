@@ -7,7 +7,8 @@ public class Key extends IdItem<Long> {
   public static int INVITE_USERS = 2;
   public static int ADMINISTER = 3;
   
-  private boolean[] perms = {false, false, false, false};;
+  private boolean[] perms = {false, false, false, false};
+  private String name;
   
   public boolean getPermission(int perm) {
     if(perm > perms.length) {
@@ -35,5 +36,13 @@ public class Key extends IdItem<Long> {
   
   public boolean isAdmin() {
     return getPermission(ADMINISTER);
+  }
+  
+  public String getName() {
+    return this.name;
+  }
+  
+  public void setName(String name) {
+    this.name = name;
   }
 }
