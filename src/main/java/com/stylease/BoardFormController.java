@@ -377,6 +377,9 @@ public class BoardFormController {
     }
     
     perms = this.getCurrentUserKey(req, b);
+    if(!(perms.isAdmin() || perms.canInvite())) {
+      throw new ResourceForbiddenException();
+    }
     setEditModel(model, perms);
     return "b_form";
   }
