@@ -3,6 +3,7 @@ package com.stylease.repos;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -55,6 +56,13 @@ public class KeyDAO extends AbstractIdDAO<Key> {
       "SELECT k.* FROM app_key k"
       + " INNER JOIN board_keys bk ON k.id = bk.keyid"
       + " WHERE k.id = ?"
+      + " AND bk.boardid = ?";
+  
+  private static final String USER_BOARD_KEYS_SQL =
+      "SELECT k.* FROM app_key k"
+      + " INNER JOIN board_keys bk ON k.id = bk.keyid"
+      + " INNER JOIN user_keys uk ON bk.keyid = uk.keyid"
+      + " WHERE uk.userid = ?"
       + " AND bk.boardid = ?";
   
   private static final String ADD_KEY_TO_USER_SQL =
@@ -167,6 +175,30 @@ public class KeyDAO extends AbstractIdDAO<Key> {
     }
     
     return lstKeys.get(0);
+  }
+  
+  public Key getBoardPermissions(User u, Board b) {
+    Key k = new Key();
+    List<Key> keyList = this.jdbcTemplate.query(this.USER_BOARD_KEYS_SQL, 
+        new Object[]{u.getId(), b.getId()},
+        new KeyRowMapper()
+    );
+    
+    Iterator<Key> itr = keyList.iterator();
+    while(itr.hasNext()) {
+      Key current = itr.next();
+      boolean can_read = current.canRead() || k.canRead();
+      boolean can_write = current.canWrite() || k.canWrite();
+      boolean invite_users = current.canInvite() || k.canInvite();
+      boolean administer = current.isAdmin() || k.isAdmin();
+      
+      k.setPermission(Key.CAN_READ, can_read);
+      k.setPermission(Key.CAN_WRITE, can_write);
+      k.setPermission(Key.INVITE_USERS, invite_users);
+      k.setPermission(Key.ADMINISTER, administer);
+    }
+    
+    return k;
   }
   
   public class KeyRowMapper implements RowMapper<Key> {

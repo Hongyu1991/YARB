@@ -233,6 +233,13 @@ public class BoardList {
         throw new ResourceNotFoundException();
       }
       
+      User u = getUserFromSession(req);
+      
+      Key perms = keyDao.getBoardPermissions(u, b);
+      if(!perms.isAdmin()) {
+        throw new ResourceForbiddenException();
+      }
+      
       model.addAttribute("boardName", b.getName());
       String referrer = req.getHeader("Referer");
       if(referrer == null) {
@@ -245,10 +252,18 @@ public class BoardList {
     }
     
     @PostMapping(path = "/b/{boardId}/delete", params = "del")
-    public String deleteBoard(HttpServletResponse resp, @PathVariable int boardId, ModelMap model) {
+    public String deleteBoard(HttpServletRequest req, HttpServletResponse resp, @PathVariable int boardId, ModelMap model) {
+      
       Board b = boardDao.getForId(boardId);
       if(b == null) {
         throw new ResourceNotFoundException();
+      }
+      
+      User u = getUserFromSession(req);
+      
+      Key perms = keyDao.getBoardPermissions(u, b);
+      if(!perms.isAdmin()) {
+        throw new ResourceForbiddenException();
       }
       
       boardDao.deleteBoard(b);
@@ -261,5 +276,32 @@ public class BoardList {
       }
       
       return "b_del";
+    }
+    
+    private User getUserFromSession(HttpServletRequest r) {
+      Object o = r.getSession().getAttribute("user");
+      if(o == null) {
+        Account account = AccountResolver.INSTANCE.getAccount(r);
+        if (account != null) {
+          
+          User u = userDao.getUserForStormpathAccount(account);
+          if(u == null) {
+            u = new User();
+            u.setAccount(account);
+            
+            ArrayList<Key> keys = new ArrayList<>(1);
+            keys.add(keyDao.getPublicKey());
+            u.setKeys(keys);
+            
+            userDao.addUser(u);
+          }
+          
+          r.getSession().setAttribute("user", u);
+          
+          return u;
+        }
+      }
+      
+      return (User)o;
     }
 }
