@@ -3,6 +3,7 @@ package com.stylease;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -67,7 +69,7 @@ public class BoardFormController {
   public String addBoardSubmit(HttpServletRequest req, HttpServletResponse resp, ModelMap model) {
     
     String boardName = req.getParameter("boardName");
-    if(boardName == null) {
+    if(boardName == null || (boardName = boardName.trim()).length() == 0) {
       model.addAttribute("errors", new String[]{"You must give this board a name."});
       setCreateModel(model);
       return "b_form";
@@ -142,7 +144,7 @@ public class BoardFormController {
     
     HashMap<Long, Key> userKeys = (HashMap<Long, Key>)sesh.getAttribute("userkeys");
     
-    switch(op) {
+    switch(op) { /*
     case USEROP_ADD:
       String username = req.getParameter("user");
       u = userDao.getUserForName(username);
@@ -159,6 +161,11 @@ public class BoardFormController {
         u = userTbl.get(uid);
       }
       catch(NumberFormatException ex) {}
+      break;
+      */
+    case USEROP_ADD:
+    case USEROP_MOD:
+      u = getUserFromForm(op, req, model);
       break;
     case USEROP_REM:
       try {
@@ -228,12 +235,197 @@ public class BoardFormController {
     return (User)o;
   }
   
-  private void setCreateModel(ModelMap model) {
-    model.addAttribute("board_action", "Create");
-    model.addAttribute("submit_action", "Create");
+  private void setFormModel(ModelMap model) {
     model.addAttribute("userop_add", USEROP_ADD);
     model.addAttribute("userop_mod", USEROP_MOD);
     model.addAttribute("userop_rem", USEROP_REM);
   }
   
+  private void setCreateModel(ModelMap model) {
+    model.addAttribute("board_action", "Create");
+    model.addAttribute("submit_action", "Create");
+    setFormModel(model);
+  }
+  
+  private void setEditModel(ModelMap model) {
+    model.addAttribute("board_action", "Edit");
+    model.addAttribute("submit_action", "Submit");
+    setFormModel(model);
+  }
+  
+  @GetMapping("/m_list/{boardId}/settings")
+  public String boardSettings(HttpServletRequest req, @PathVariable int boardId, ModelMap model) {
+    Board b = boardDao.getForId(boardId);
+    HashMap<Long, User> userTbl = new HashMap<>();
+    HashMap<Long, Key> userKeys = new HashMap<>();
+    
+    Iterator<Key> keyItr = b.getKeys().iterator();
+    while(keyItr.hasNext()) {
+      Key k = keyItr.next();
+      System.out.println("Got key " + k.getName());
+      if(k.getId() == keyDao.getPublicKey().getId()) {
+        model.addAttribute("ispublic", true);
+        continue;
+      }
+      Iterator<User> userItr = userDao.getUsersForKey(k).iterator();
+      while(userItr.hasNext()) {
+        
+        User u = userItr.next();
+        
+        System.out.println("Got user " + u.getName());
+        
+        userTbl.put(u.getId(), u);
+        userKeys.put(u.getId(), k);
+      }
+    }
+    
+    HttpSession sesh = req.getSession();
+    sesh.setAttribute("usertbl", userTbl);
+    sesh.setAttribute("userkeys", userKeys);
+    
+    model.addAttribute("boardName", b.getName());
+    setEditModel(model);
+    
+    return "b_form";
+  }
+  
+  @PostMapping(path = "/m_list/{boardId}/settings", params = "userop")
+  public String boardSettingsUserSubmit(HttpServletRequest req,
+      @PathVariable int boardId,
+      @RequestParam("userop") String userop,
+      ModelMap model) {
+    
+    Board b = boardDao.getForId(boardId);
+    HttpSession sesh = req.getSession();
+    HashMap<Long, User> userTbl = (HashMap<Long, User>)sesh.getAttribute("usertbl");
+    HashMap<Long, Key> userKeys = (HashMap<Long, Key>)sesh.getAttribute("userkeys");
+    
+    if(b != null) {
+      model.addAttribute("boardName", b.getName());
+      
+      User u = null;
+      
+      switch(userop) {
+      case USEROP_ADD:
+      case USEROP_MOD:
+        u = getUserFromForm(userop, req, model);
+        break;
+      case USEROP_REM:
+        long uid = Long.parseLong(req.getParameter("users"));
+        userTbl.remove(uid);
+        Key k = userKeys.remove(uid);
+        if(k != null) {
+          keyDao.deleteKey(k);
+        }
+        break;
+      }
+      
+      if(u != null) {
+        
+        Key k = userKeys.get(u.getId());
+        if(k == null) {
+          k = new Key();
+          k.setName(u.getName() + " on " + b.getName());
+          userKeys.put(u.getId(), k);
+          keyDao.addKey(k);
+          keyDao.addKeyToUser(u, k);
+          keyDao.addKeyToBoard(b, k);
+        }
+        
+        boolean canRead = req.getParameter("can_read") != null;
+        boolean canWrite = req.getParameter("can_write") != null;
+        boolean canInvite = req.getParameter("invite_users") != null;
+        boolean administer = req.getParameter("administer") != null;
+        
+        k.setPermission(Key.CAN_READ, canRead);
+        k.setPermission(Key.CAN_WRITE, canWrite);
+        k.setPermission(Key.INVITE_USERS, canInvite);
+        k.setPermission(Key.ADMINISTER, administer);
+        
+        keyDao.updateKey(k);
+      }
+      
+    } // board exists
+    else {
+      throw new ResourceNotFoundException();
+    }
+    
+    setEditModel(model);
+    return "b_form";
+  }
+  
+  @PostMapping(path = "/m_list/{boardId}/settings", params = "saveboard")
+  public String boardSettingsSubmit(HttpServletRequest req,
+      HttpServletResponse resp,
+      @PathVariable int boardId,
+      ModelMap model) {
+    
+    Board b = boardDao.getForId(boardId);
+    if(b == null) {
+      throw new ResourceNotFoundException();
+    }
+    
+    String boardName = req.getParameter("boardName");
+    if(boardName == null || (boardName = boardName.trim()).length() == 0) {
+      model.addAttribute("errors", new String[]{"You must give this board a name."});
+      setEditModel(model);
+      return "b_form";
+    }
+    
+    b.setName(boardName);
+    boardDao.updateBoard(b);
+    
+    if(req.getParameter("ispublic") != null) {
+      keyDao.addKeyToBoard(b, keyDao.getPublicKey());
+    }
+    else {
+      keyDao.removeKeyFromBoard(b, keyDao.getPublicKey());
+    }
+    
+    HttpSession sesh = req.getSession();
+    sesh.removeAttribute("usertbl");
+    sesh.removeAttribute("userkeys");
+    
+    try {
+      resp.sendRedirect("/m_list/" + boardId);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      model.addAttribute("errors", new String[]{"Something went wrong, but your changes have been saved."});
+      setCreateModel(model);
+    }
+    setEditModel(model);
+    return "b_form";
+  }
+  
+  private User getUserFromForm(String userop, HttpServletRequest req, ModelMap model) {
+    
+    User u = null;
+    HashMap<Long, User> userTbl = (HashMap<Long, User>)req.getSession().getAttribute("usertbl");
+    
+    switch(userop) {
+    case USEROP_ADD:
+      String username = req.getParameter("user");
+      u = userDao.getUserForName(username);
+      if(u == null) {
+        model.addAttribute("errors", new String[]{"The user " + username + " does not exist."});
+      }
+      
+      if(userTbl.containsKey(u.getId())) {
+        model.addAttribute("errors", new String[]{"The user " + username + " has already been added."});
+        u = null;
+      }
+      userTbl.put(u.getId(), u);
+      break;
+    case USEROP_MOD:
+      try {
+        long uid = Long.parseLong(req.getParameter("users"));
+        u = userTbl.get(uid);
+      }
+      catch(NumberFormatException ex) {}
+      break;
+    }
+    
+    return u;
+  }
 }
