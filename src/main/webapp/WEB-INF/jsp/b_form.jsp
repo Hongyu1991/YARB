@@ -1,5 +1,6 @@
-<%@ page session="false"%>
+<%@ page session="true"%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.stylease.entities.Key" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
  
@@ -59,8 +60,8 @@
 									</label>
 								</div>
 							
-								<button name="userop" type="submit" value="${userop_add}" class="btn btn-success">Add User</button>
-								<button name="userop" type="submit" value="${userop_mod}" class="btn btn-info" style="display:none;">Modify Permissions</button>
+								<button id="btnAddUser" name="userop" type="submit" value="${userop_add}" class="btn btn-success">Add User</button>
+								<button id="btnModUser" name="userop" type="submit" value="${userop_mod}" class="btn btn-info" style="display:none;">Modify Permissions</button>
 							</fieldset>
 							
 							<div class="form-check">
@@ -78,5 +79,21 @@
 				</div>
 			</div>            
         </div>
+        <script type="text/javascript">
+        	var perms = {
+        		<c:forEach var="entry" items="${userkeys}">
+        			${entry.key}: {
+        				"can_read": ${entry.value.canRead()},
+        				"can_write": ${entry.value.canWrite()},
+        				"invite_users": ${entry.value.canInvite()},
+        				"administer": ${entry.value.isAdmin()}
+        			},
+        		</c:forEach>
+        	};
+        	
+        	var userop_add = "${userop_add}";
+        	var userop_rem = "${userop_rem}";
+        </script>
+        <script src="/resources/js/b_form.js"></script>
     </jsp:body>
 </t:page>
