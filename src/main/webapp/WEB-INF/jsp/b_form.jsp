@@ -53,26 +53,39 @@
 									</label>
 								</div>
 								
+								<c:if test="${perms.isAdmin()}">
 								<div class="form-check">
 									<label for="chkAdmin">
 										<input type="checkbox" id="chkAdmin" name="administer" class="form-check-input"/>
 										Board Administrator
 									</label>
 								</div>
+								</c:if>
 							
 								<button id="btnAddUser" name="userop" type="submit" value="${userop_add}" class="btn btn-success">Add User</button>
+								
+								<c:if test="${perms.isAdmin()}">
 								<button id="btnModUser" name="userop" type="submit" value="${userop_mod}" class="btn btn-info" style="display:none;">Modify Permissions</button>
+								</c:if>
 							</fieldset>
 							
 							<div class="form-check">
 								<label for="chkPublic">
-									<input type="checkbox" id="chkPublic" name="ispublic" class="form-check-input" ${!empty param.ispublic ? 'checked' : !empty ispublic ? 'checked' : ''}/>
+									<input 
+										type="checkbox" 
+										id="chkPublic" 
+										name="ispublic" 
+										class="form-check-input ${perms.isAdmin() ? '' : 'disabled'}" 
+										${!empty param.ispublic ? 'checked' : !empty ispublic ? 'checked' : ''} 
+										${ perms.isAdmin() ? '' : 'disabled' }/>
 									Public board (anyone can view)
 								</label>
 							</div>
 						</div>
 						
+						<c:if test="${perms.isAdmin()}">
 						<button name="saveboard" type="submit" value="${submit_action}" class="btn btn-primary">${submit_action}</button>
+						</c:if>
 						
 						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 					</form>
@@ -82,14 +95,21 @@
         <script type="text/javascript">
         	var perms = {
         		<c:forEach var="entry" items="${sessionScope.userkeys}">
-        			${entry.key}: {
-        				"can_read": ${entry.value.canRead()},
-        				"can_write": ${entry.value.canWrite()},
-        				"invite_users": ${entry.value.canInvite()},
-        				"administer": ${entry.value.isAdmin()}
-        			},
+       			${entry.key}: {
+       				"can_read": ${entry.value.canRead()},
+       				"can_write": ${entry.value.canWrite()},
+       				"invite_users": ${entry.value.canInvite()},
+       				"administer": ${entry.value.isAdmin()}
+       			},
         		</c:forEach>
         	};
+        	
+        	var user_perms = {
+        		"can_read": ${perms.canRead()},
+        		"can_write": ${perms.canWrite()},
+        		"invite_users": ${perms.canInvite()},
+        		"administer": ${perms.isAdmin()}
+        	}
         	
         	var userop_add = "${userop_add}";
         	var userop_rem = "${userop_rem}";

@@ -38,6 +38,8 @@ var userTxtChanged = function(e) {
 }
 
 $(function() {
-	$('#selUsers').change(userSelected);
-	$('#txtUser').on('input', userTxtChanged);
+	if(user_perms.administer) {
+		$('#selUsers').change(userSelected);
+		$('#txtUser').on('input', userTxtChanged);
+	}
 });
