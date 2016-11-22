@@ -3,6 +3,7 @@
 <%@ page import="com.stylease.entities.Key" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
  
 <t:page>
     <jsp:attribute name="title">Welcome!</jsp:attribute>
@@ -85,6 +86,9 @@
 						
 						<c:if test="${perms.isAdmin()}">
 						<button name="saveboard" type="submit" value="${submit_action}" class="btn btn-primary">${submit_action}</button>
+							<c:if test="${!fn:endsWith(uri,'b_add')}">
+							<a href="delete"><button type="button" class="btn btn-danger">Delete Board</button></a>
+							</c:if>
 						</c:if>
 						
 						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
