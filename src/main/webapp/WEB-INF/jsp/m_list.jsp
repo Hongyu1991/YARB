@@ -7,8 +7,12 @@
     <jsp:attribute name="title">Welcome!</jsp:attribute>
     <jsp:body>
         <div class="jumbotron" id="welcome">
- 
-			<h2>${!empty title ? title : 'All Messages' }</h2>
+			<h2 class="board-title">${!empty title ? title : 'All Messages' }</h2>
+			<c:if test="${canEdit}">
+			<span class="board-settings">
+				<a href="${board}/settings">Settings</a>
+			</span>
+			</c:if>
 				<div class="row fill">
 					<div class="col-md-2">
 						<h3>Boards</h3>

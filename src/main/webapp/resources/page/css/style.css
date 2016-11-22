@@ -18,6 +18,13 @@ html, body {
 }
 */
 
+h2.board-title {
+	display: inline;
+}
+
+span.board-settings {
+	float: right;
+}
 
 textarea {
 	resize: none;

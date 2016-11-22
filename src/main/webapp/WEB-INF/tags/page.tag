@@ -27,7 +27,7 @@
     <div class="container fill">
  
         <div class="header">
- 
+ 			
             <ul class="nav nav-pills pull-right">
                 <c:set var="uri" value="${requestScope['javax.servlet.forward.request_uri']}"/>
                 <c:choose><c:when test="${!empty account}">
@@ -38,6 +38,11 @@
                 <%-- Change upper right context menu depending on if the user is logged in or not: --%>
                 <c:choose>
                     <c:when test="${!empty account}">
+                    	<li>
+                    		<a href="/b_add">
+                    			New Board
+                    		</a>
+                    	</li>
                         <li><form action="/logout" method="POST">
                         <input type="submit" class="btn btn-danger" value="Logout"/></form></li>
                     </c:when>
