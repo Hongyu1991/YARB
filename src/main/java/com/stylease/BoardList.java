@@ -138,7 +138,7 @@ public class BoardList {
   }
   
   @GetMapping("/m_list/{boardId}")
-  public String viewAllMessages(@PathVariable int boardId, ModelMap model) {
+  public String viewAllMessages(HttpServletRequest req, @PathVariable int boardId, ModelMap model) {
     
     Board b = boardDao.getForId(boardId);
     
@@ -154,6 +154,10 @@ public class BoardList {
       b = boards.get(boardId);
     }
     
+    User u = getUserFromSession(req);
+    Key perms = keyDao.getBoardPermissions(u, b);
+    
+    model.addAttribute("canEdit", (perms.canInvite() || perms.isAdmin()));
     model.addAttribute("title", b.getName());
     model.addAttribute("allMessages", b.getMessages());
     model.addAttribute("board", boardId);
@@ -226,7 +230,7 @@ public class BoardList {
     return "m_list";
   }
     
-    @GetMapping("/b/{boardId}/delete") 
+    @GetMapping("/m_list/{boardId}/delete") 
     public String deleteBoard(HttpServletRequest req, @PathVariable int boardId, ModelMap model) {
       Board b = boardDao.getForId(boardId);
       if(b == null) {
