@@ -34,21 +34,49 @@
 							</div>
 							<div class="col-sm-5">
 								<div class="row">
-									<textarea id="msgTxt">Your message</textarea>
-									</div>
+									<!-- <textarea id="msgTxt">Your message</textarea> -->
+									<div id="msgTxt" contenteditable="true">Your message</div>
+								</div>
 								<div class="row">
-									<div class="col-sm-9"></div>
-									<div id="btnSend" class="col-sm-3 btn btn-primary">
-										Send
+									<div class="col-sm-12">
+										<button type="button" id="btnSend" class="btn btn-primary btn-right">
+											Send
+										</button>
 									</div>
+								</div>
+								<div class="row">
+									<label for="txtStyleName">Style name:</label>
+									<input id="txtStyleName" type="text" />
 								</div>
 								<div class="row">Attributes:</div>
 								<div class="row">
 									<div class="col-sm-6">
-										<select id="attrSel"></select>
+										<select id="selUserAttr">
+										<c:forEach var="attrib" items="${attribs}">
+										<option value="${attrib.getId()}">${attrib.getName()}</option>
+										</c:forEach>
+										</select>
 									</div>
 									<div class="col-sm-6">
-										<input type="text" id="valTxt" />
+										<input type="text" id="txtVal" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-12">
+										<button id="btnAddStyle" type="button" class="btn btn-info btn-right">Add Style</button>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-6">
+										<select id="selAttr" size="6" class="attribsel"></select>
+									</div>
+									<div class="col-sm-6">
+										<select id="selVal" size="6" class="attribsel"></select>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-12">
+										<button id="btnRemStyle" type="button" class="btn btn-danger btn-right">Remove attribute</button>
 									</div>
 								</div>
 							</div>
@@ -70,5 +98,11 @@
     		 -->
             
         </div>
+        
+        <script type="text/javascript">
+        	var boardId = ${board};
+        </script>
+        <script src="/resources/js/m_list.js"></script>
+        
     </jsp:body>
 </t:page>

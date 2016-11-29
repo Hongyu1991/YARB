@@ -33,9 +33,22 @@ textarea {
 }
 
 .msgarea {
-	/*height: 300px;*/
+	height: 300px;
 	/*height: 300px;*/
 	/*max-height: 300px;*/
 	overflow-y: scroll;
 	background-color: white;
+}
+
+select.attribsel {
+	width: 100%;
+}
+
+button.btn-right {
+	float: right;
+}
+
+div#msgTxt {
+	background: white;
+	min-height: 3em;
 }
