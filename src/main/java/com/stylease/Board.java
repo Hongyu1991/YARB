@@ -38,4 +38,9 @@ public class Board {
       System.out.println("Added message " + m.id);
     }
 
+    public Message getMessage(int i) {
+      // TODO Auto-generated method stub
+      return messages.get(i);
+    }
+
 }
