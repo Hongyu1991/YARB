@@ -86,6 +86,7 @@
 						
 						<c:if test="${perms.isAdmin()}">
 						<button name="saveboard" type="submit" value="${submit_action}" class="btn btn-primary">${submit_action}</button>
+							<c:set var="uri" value="${requestScope['javax.servlet.forward.request_uri']}"/>
 							<c:if test="${!fn:endsWith(uri,'b_add')}">
 							<a href="delete"><button type="button" class="btn btn-danger">Delete Board</button></a>
 							</c:if>
