@@ -4,6 +4,9 @@ import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.stylease.entities.Message;
+
 //import static org.junit.assert.*;
 import junit.framework.*;
 

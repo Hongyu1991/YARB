@@ -2,9 +2,12 @@ package com.stylease;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
+
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import com.stylease.entities.Message;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestEncoder {
