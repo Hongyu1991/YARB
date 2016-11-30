@@ -441,6 +441,7 @@ public class BoardFormController {
       u = userDao.getUserForName(username);
       if(u == null) {
         model.addAttribute("errors", new String[]{"The user " + username + " does not exist."});
+        return null;
       }
       
       if(userTbl.containsKey(u.getId())) {
