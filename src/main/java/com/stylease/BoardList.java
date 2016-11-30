@@ -96,7 +96,7 @@ public class BoardList {
   };
   
   private ArrayList<Board> boards;
-  
+
   @Autowired
   private KeyDAO keyDao;
   
@@ -115,9 +115,9 @@ public class BoardList {
       b.setName(STATIC_MESSAGES[messagesIdx][0]);
       b.setId((long)i);
       for(int j = 0; j < STATIC_MESSAGES[messagesIdx].length; j++) {
-        Message m = new Message();
-        
-        m.setText(STATIC_MESSAGES[messagesIdx][j]);
+        Message m = new Message(j, STATIC_MESSAGES[messagesIdx][j]);
+ //       m.setText(STATIC_MESSAGES[messagesIdx][j]);
+   //     m.setId(j);
         b.addMessage(m, j);
       }
       
