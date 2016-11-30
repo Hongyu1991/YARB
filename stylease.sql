@@ -97,7 +97,7 @@ CREATE TABLE message_styles (
         ON DELETE CASCADE
 );
 
-INSERT INTO styles (name) VALUES
+INSERT INTO attribs (name) VALUES
 ('font-weight'),
 ('font-style'),
 ('font-variant'),
@@ -114,4 +114,10 @@ INSERT INTO styles (name) VALUES
 ('overflow'),
 ('margin'),
 ('padding')
+;
+
+INSERT INTO app_user (stormpath_username) VALUES
+('foo@bar.com'), 
+('ajo0131@gmail.com'), 
+('foobar@baz.com')
 ;
