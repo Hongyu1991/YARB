@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import com.stylease.entities.Board;
 import com.stylease.entities.Key;
+import com.stylease.entities.User;
 
 
 @Repository
@@ -24,6 +25,15 @@ public class BoardDAO extends AbstractIdDAO<Board> {
   private KeyDAO keyDao;
   
   private SimpleJdbcInsert boardAdder;
+  
+  private static final String ALL_BOARDS_SQL = "SELECT * FROM board";
+  
+  private static final String USER_BOARDS_SQL ="SELECT * FROM "
+		  + "(SELECT DISTINCT boardid FROM board_keys bk " 
+		  + "INNER JOIN app_key k ON k.id = bk.keyid "
+		  + "INNER JOIN user_keys uk ON bk.keyid = uk.keyid " 
+		  + "WHERE uk.userid = ? AND k.can_read=TRUE) x, board b "
+		  + "WHERE x.boardid = b.id";  
   
   private static final String UPDATE_BOARD_SQL =
       "UPDATE board SET"
@@ -78,6 +88,14 @@ public class BoardDAO extends AbstractIdDAO<Board> {
   
   public int deleteBoard(Board b) {
     return this.jdbcTemplate.update(DEL_BOARD_SQL, b.getId());
+  }
+  
+  public List<Board> getUserBoards(User u) {
+	return this.jdbcTemplate.query(USER_BOARDS_SQL, new Object[]{u.getId()}, new BoardRowMapper());
+  }
+  
+  public List<Board> getAllBoards() {
+	return this.jdbcTemplate.query(ALL_BOARDS_SQL, new BoardRowMapper());
   }
   
   public class BoardRowMapper implements RowMapper<Board> {

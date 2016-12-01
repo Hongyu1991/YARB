@@ -16,7 +16,7 @@
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="jdbc:postgresql://localhost:5432/stylease"/>
+        <property name="url" value="jdbc:postgresql://stylease.cvh7fc8rrz0m.us-east-1.rds.amazonaws.com:5432/postgres"/>
         <property name="username" value="yarb"/>
         <property name="password" value="yarb4156"/>
     </bean>

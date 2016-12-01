@@ -39,6 +39,10 @@ public class Board extends IdItem<Long> {
     this.enabled = enabled;
   }
   
+  public int getSize() {
+	  return this.messages.size();
+  }
+  
   public List<Message> getMessages() {
     return this.messages;
   }

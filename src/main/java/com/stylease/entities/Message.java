@@ -1,32 +1,50 @@
 package com.stylease.entities;
 
-public class Message {
-    int id;
-    String text;
+import java.util.Date;
 
-	public String getText() {
-		return text;
+public class Message extends IdItem<Long> {
+
+    private String content;
+    private int board;
+    private int author;
+    private Date posted;
+
+	public String getContent() {
+		return content;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public void setContent(String text) {
+		this.content = text;
+	}
+	
+	public int getBoard() {
+		return board;
 	}
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-	public Message(int id, String text) {
-        this.id = id;
-		this.text = text;
+	public void setBoard(int board) {
+		this.board = board;
+	}
+	
+	public int getAuthor() {
+		return author;
 	}
 
-	public Message() {
-        this.id = 0;
-        this.text = "";
+	public void setAuthor(int author) {
+		this.author = author;
 	}
+	
+	public Date getPosted() {
+		return this.posted;
+	}
+		  
+	public void setPosted(Date posted) {
+		this.posted = posted;
+	}
+		  
+	public void setPosted(java.sql.Date posted) {
+		this.posted = new Date(posted.getTime());
+	}
+
 }
+
+
