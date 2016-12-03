@@ -9,9 +9,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -65,8 +63,8 @@ public class KeyDAO extends AbstractIdDAO<Key> {
       + " WHERE uk.userid = ?"
       + " AND bk.boardid = ?";
   
-  private static final String ADD_KEY_TO_USER_SQL =
-      "INSERT INTO user_keys VALUES (?, ?)";
+  //private static final String ADD_KEY_TO_USER_SQL =
+  //    "INSERT INTO user_keys VALUES (?, ?)";
   
   private static final String BOARDID_COL = "boardid";
   private static final String USERID_COL = "userid";
@@ -179,7 +177,7 @@ public class KeyDAO extends AbstractIdDAO<Key> {
   
   public Key getBoardPermissions(User u, Board b) {
     Key k = new Key();
-    List<Key> keyList = this.jdbcTemplate.query(this.USER_BOARD_KEYS_SQL, 
+    List<Key> keyList = this.jdbcTemplate.query(USER_BOARD_KEYS_SQL, 
         new Object[]{u.getId(), b.getId()},
         new KeyRowMapper()
     );

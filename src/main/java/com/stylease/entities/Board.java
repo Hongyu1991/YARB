@@ -1,6 +1,8 @@
 package com.stylease.entities;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class Board extends IdItem<Long> {
@@ -8,8 +10,13 @@ public class Board extends IdItem<Long> {
   private String name;
   private Date created;
   private boolean enabled;
-  private List<Message> messages;
+  private HashMap<Long, Message> messages;
   private List<Key> keys;
+  
+  public Board() {
+	  messages = new HashMap<Long, Message>();
+	  keys = new ArrayList<Key>();
+  }
   
   public String getName() {
     return this.name;
@@ -43,12 +50,12 @@ public class Board extends IdItem<Long> {
 	  return this.messages.size();
   }
   
-  public List<Message> getMessages() {
-    return this.messages;
+  public List<Message> getMessageList() {
+    return new ArrayList<Message>(messages.values());
   }
   
-  public void setMessages(List<Message> messages) {
-    this.messages = messages;
+  public Message getMessage(int i) {
+    return this.messages.get(Long.valueOf(i));
   }
   
   public List<Key> getKeys() {
@@ -60,11 +67,7 @@ public class Board extends IdItem<Long> {
   }
   
   public void addMessage(Message m) {
-    messages.add(m);
-  }
-  
-  public void addMessage(Message m, int i) {
-    messages.add(i, m);
+    messages.put(m.getId(),m);
   }
   
   public void addKey(Key k) {

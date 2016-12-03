@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 import com.stormpath.sdk.account.Account;
 import com.stylease.entities.Key;
 import com.stylease.entities.User;
-import com.stylease.repos.KeyDAO.KeyRowMapper;
 
 @Repository
 public class UserDAO extends AbstractIdDAO<User> {
@@ -29,8 +28,8 @@ public class UserDAO extends AbstractIdDAO<User> {
       + " INNER JOIN user_keys uk ON u.id = uk.userid"
       + " WHERE uk.keyid = ?";
   
-  private static final String ADD_USER_SQL =
-      "INSERT INTO app_user (stormpath_username) VALUES (?)";
+  //private static final String ADD_USER_SQL =
+  //    "INSERT INTO app_user (stormpath_username) VALUES (?)";
   
   private static final String USER_ID_COL = "id";
   private static final String USER_NAME_COL = "stormpath_username";

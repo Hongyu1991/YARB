@@ -1,8 +1,6 @@
 package com.stylease.entities;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import com.stormpath.sdk.account.Account;
 
 public class User extends IdItem<Long> {

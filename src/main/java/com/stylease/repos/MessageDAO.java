@@ -3,7 +3,6 @@ package com.stylease.repos;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -13,17 +12,11 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import com.stylease.entities.Board;
-import com.stylease.entities.Key;
 import com.stylease.entities.Message;
 import com.stylease.entities.User;
-import com.stylease.repos.BoardDAO.BoardRowMapper;
-import com.stylease.repos.KeyDAO.KeyRowMapper;
 
 @Repository
 public class MessageDAO extends AbstractIdDAO<Message> {
-
-	@Autowired
-	private BoardDAO boardDao;
 
 	private SimpleJdbcInsert messageAdder;
 	

@@ -22,14 +22,13 @@ import com.stylease.entities.Board;
 import java.io.IOException;
 import java.util.*;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class BoardList {
   
-  private ArrayList<Board> boards;
+  private List<Board> boards;
   
   @Autowired
   private KeyDAO keyDao;
@@ -42,12 +41,18 @@ public class BoardList {
   
   @Autowired
   private MessageDAO messageDao;
+  
+  private void updateMessages(Board b){
+	  for(Message m : messageDao.getForBoard(b)) {
+		  b.addMessage(m);
+	  }
+  }
 
-  private ArrayList<Board> getBoards(User u) {
-	  ArrayList<Board> boardList = new ArrayList<>();
+  private List<Board> getBoards(User u) {
+	  List<Board> boardList = new ArrayList<>();
 	  for(Board b : boardDao.getUserBoards(u)) {
-	    	b.setMessages(messageDao.getForBoard(b));
-	    	boardList.add(b);
+		  updateMessages(b);
+	      boardList.add(b);
 	  }	  
 	  return boardList;
   }
@@ -57,8 +62,7 @@ public class BoardList {
   }
   
   @GetMapping("/b_list")
-  public String showBoards(HttpServletRequest req, ModelMap model) {
-	User u = getUserFromSession(req);
+  public String showBoards(User u, ModelMap model) {
 	boards = getBoards(u);
     model.addAttribute("boards", boards);
     return "b_list";
@@ -67,64 +71,38 @@ public class BoardList {
   @GetMapping("/m_list/{boardId}")
   public String viewAllMessages(HttpServletRequest req, @PathVariable int boardId, ModelMap model) {
     
-    Board b = boardDao.getForId(boardId);
-    
-    if(b == null) {
-      if(boardId >= boards.size()) {
+    Board b = boards.get(boardId - 1);  
+    if(b == null && boardId > boards.size()) {
         throw new ResourceNotFoundException();
-      }
-      
-      b = boards.get(boardId);
+    }else{
+        updateMessages(b);
     }
     
-    User u = getUserFromSession(req);
-    Key perms = keyDao.getBoardPermissions(u, b);
+    //User u = getUserFromSession(req);
+    //Key perms = keyDao.getBoardPermissions(u, b);
     
-    model.addAttribute("canEdit", (perms.canInvite() || perms.isAdmin()));
+    //model.addAttribute("canEdit", (perms.canInvite() || perms.isAdmin()));
+    
     model.addAttribute("title", b.getName());
-    model.addAttribute("allMessages", b.getMessages());
+    model.addAttribute("allMessages", b.getMessageList());
     model.addAttribute("board", boardId);
     return "m_list";
   }
   
   @GetMapping("/")
   public String welcomeHome(HttpServletRequest req, ModelMap model) {
-      Account account = AccountResolver.INSTANCE.getAccount(req);
-      if (account != null) {
-          model.addAttribute(account);
-          User u = userDao.getUserForStormpathAccount(account);
-          if(u == null) {
-            u = new User();
-            u.setAccount(account);
-            
-            ArrayList<Key> keys = new ArrayList<>(1);
-            keys.add(keyDao.getPublicKey());
-            u.setKeys(keys);
-            
-            userDao.addUser(u);
-          }
-          
-          req.getSession().setAttribute("user", u);
-      }
-    
-    //return "home";
-      return showBoards(req, model) ;
+	  User u = getUserFromSession(req);
+      return showBoards(u, model) ;
   }
 
   @GetMapping("/m/{boardId}/{messageId}")
   public String viewMessage(@PathVariable int boardId, @PathVariable int messageId, ModelMap model) {
     
-    String post = "No message with that ID.";
-    if(this.boards.size() > boardId) {
-      Board b = boards.get(boardId);
-      if (b.getMessages().size() > messageId) {
-          post = b.getMessages().get(messageId).getContent();
-      }
-      
-      System.out.println(messageId);
-      /*for(int i = 0; i < b.messages.size(); i++) {
-        System.out.println(messages.get(i).id);
-      }*/
+    String post = "No message with that ID";
+    if(this.boards.size() >= boardId) {
+      Board b = boards.get(boardId - 1);
+      updateMessages(b);
+      post = b.getMessage(messageId).getContent();
     }
         
     model.addAttribute("messageText", post);
@@ -134,7 +112,7 @@ public class BoardList {
   
     @GetMapping("/m_form/{boardId}")
     public String addMessageForm(@PathVariable int boardId, ModelMap model) {
-      model.addAttribute("board", boardId);
+        model.addAttribute("board", boardId);
         return "m_form";
     }
   
@@ -142,25 +120,29 @@ public class BoardList {
   public String addMessage(HttpServletRequest req, @PathVariable int boardId, 
 		  @RequestParam("message") String message, ModelMap model) {
     	
-    if(boards.size() <= boardId){
+    if(boards.size() < boardId){
     	throw new ResourceNotFoundException();
     }
     
-    Board b = boards.get(boardId);    
-    User u = userDao.getUserForStormpathAccount(AccountResolver.INSTANCE.getAccount(req));
+    User u = getUserFromSession(req);
+    Board b = boards.get(boardId - 1);
+    updateMessages(b);
+    
     Message m = new Message(); 
     m.setContent(message);
     m.setBoard(boardId);
     m.setAuthor(u.getId().intValue());
-    b.addMessage(m, b.getSize());
-    model.addAttribute("allMessages", b.getMessages());
+    b.addMessage(m);
+    messageDao.addMessage(m);    
+    
+    model.addAttribute("allMessages", b.getMessageList());
     model.addAttribute("board", boardId);
     return "m_list";
   }
     
     @GetMapping("/m_list/{boardId}/delete") 
     public String deleteBoard(HttpServletRequest req, @PathVariable int boardId, ModelMap model) {
-      Board b = boardDao.getForId(boardId);
+      Board b = boards.get(boardId - 1);
       if(b == null) {
         throw new ResourceNotFoundException();
       }

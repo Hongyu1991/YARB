@@ -13,8 +13,8 @@ public class Message extends IdItem<Long> {
 		return content;
 	}
 
-	public void setContent(String text) {
-		this.content = text;
+	public void setContent(String content) {
+		this.content = content;
 	}
 	
 	public int getBoard() {
