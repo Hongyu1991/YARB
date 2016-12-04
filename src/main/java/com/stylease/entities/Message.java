@@ -1,9 +1,24 @@
 package com.stylease.entities;
 
+import java.util.ArrayList;
+
 public class Message {
     int id;
     String text;
 
+    private ArrayList<Attribute> effectedAttr;
+    //could instead have
+    //private Style style;
+    
+    public ArrayList<Attribute> getEffectedAttr(){
+    	return effectedAttr;
+    }
+    
+    public Attribute addAttribute(Attribute a){
+    	effectedAttr.add(a);
+		return a;
+    }
+    
 	public String getText() {
 		return text;
 	}
