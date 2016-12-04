@@ -8,11 +8,15 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stylease.entities.Attribute;
 import com.stylease.entities.Key;
 import com.stylease.entities.Message;
 import com.stylease.entities.User;
@@ -137,6 +141,13 @@ public class BoardList {
     return "b_list";
   }
   
+  
+    @RequestMapping(value="/m_list/addStyle/", method=RequestMethod.GET)
+	public String controllerMethodStyle(@RequestParam String json) {
+	    System.out.println("yooooo : "+json);
+		return null;
+	}
+  
   @GetMapping("/m_list/{boardId}")
   public String viewAllMessages(HttpServletRequest req, @PathVariable int boardId, ModelMap model) {
     
@@ -156,10 +167,12 @@ public class BoardList {
     
     User u = getUserFromSession(req);
     Key perms = keyDao.getBoardPermissions(u, b);
+    Attribute alist = new Attribute();
     
     model.addAttribute("canEdit", (perms.canInvite() || perms.isAdmin()));
     model.addAttribute("title", b.getName());
     model.addAttribute("allMessages", b.getMessages());
+    model.addAttribute("attribs", alist.allAttribs());
     model.addAttribute("board", boardId);
     return "m_list";
   }
