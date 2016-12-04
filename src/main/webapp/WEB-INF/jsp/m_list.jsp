@@ -53,32 +53,48 @@
 									<div class="col-sm-6">
 										<select id="selUserAttr">
 										<c:forEach var="attrib" items="${attribs}">
-										<option value="${attrib.getId()}">${attrib.getName()}</option>
+										<option value="${attrib.getName()}">${attrib.getName()}</option>
 										</c:forEach>
 										</select>
 									</div>
 									<div class="col-sm-6">
+										<button id="btnAddStyle" type="button" class="btn btn-info btn-right">Add Style</button>
+										
+									</div>
+									
+									<!--
+									<div class="col-sm-6">
 										<input type="text" id="txtVal" />
 									</div>
+									-->
 								</div>
 								<div class="row">
 									<div class="col-sm-12">
+										<!--
 										<button id="btnAddStyle" type="button" class="btn btn-info btn-right">Add Style</button>
+										-->
 									</div>
 								</div>
 								<div class="row">
 									<div class="col-sm-6">
 										<select id="selAttr" size="6" class="attribsel"></select>
 									</div>
+									<div class="col-sm-12">
+										<button id="btnRemStyle" type="button" class="btn btn-danger btn-right">Remove attribute</button>
+									</div>
+									<!--
 									<div class="col-sm-6">
 										<select id="selVal" size="6" class="attribsel"></select>
 									</div>
+									-->
 								</div>
+								<!--
 								<div class="row">
 									<div class="col-sm-12">
 										<button id="btnRemStyle" type="button" class="btn btn-danger btn-right">Remove attribute</button>
 									</div>
 								</div>
+								-->
 							</div>
 						</div>
 					</div>
